@@ -24,7 +24,7 @@ namespace TagsCloudVisualization
         }
 
         private const float MaxFontSize = 120.0f;
-        private const float MinFontSize = 30.0f;
+        private const float MinFontSize = 20.0f;
 
         private static void MakeWordClod(Dictionary<string, int> stats, string savePath)
         {
@@ -36,7 +36,7 @@ namespace TagsCloudVisualization
 
             var significantStats = stats.ToList();
             significantStats.Sort((p1, p2) => -1 * p1.Value.CompareTo(p2.Value));
-            significantStats = significantStats.Take(100).ToList();
+            significantStats = significantStats.Take(500).ToList();
             var maxWeight = significantStats[0].Value;
             var minWeight = significantStats[significantStats.Count - 1].Value;
             
