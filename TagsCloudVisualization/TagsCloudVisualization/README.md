@@ -26,4 +26,7 @@
 **Война и мир, 500 слов длиннее трех букв, размер шрифта 0т 20 до 120**
 ![3](https://raw.githubusercontent.com/Yewert/tdd/development/TagsCloudVisualization/TagsCloudVisualization/coolWords3.png)
 
+**Анджей Сапковски "Башня ласточки, 500 слов длиннее трех букв, размер шрифта 0т 10 до 120**
+![4](https://raw.githubusercontent.com/Yewert/tdd/development/TagsCloudVisualization/TagsCloudVisualization/witcher.png)
+
 _Синие прямоугольники - те размеры, по которым генерировалось облако. Они чуть больше, чем само слово._
