@@ -78,12 +78,12 @@ namespace TagsCloudVisualization
             square = square < 0 ? int.MaxValue : square;
             var stretchCoefficient = (1.0 / square);
             var i = 0;
+            var angle = 0.0;
             while (true)
             {
                 if (i == int.MaxValue)
                     return null;
-                var angle = i * DeltaAngle
-                            *(0.75 / (i * stretchCoefficient + 1) + 0.5);
+                angle += DeltaAngle *(0.75 / (i * stretchCoefficient + 1) + 0.5);
                 var shiftFromCenter = TransformCoordinatesFromPolarToCartesian(angle, angle);
                 var upperLeftCorner = new Point(center.X + shiftFromCenter.X - rectangleSize.Width / 2,
                     center.Y + shiftFromCenter.Y - rectangleSize.Height / 2);

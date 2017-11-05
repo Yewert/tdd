@@ -17,10 +17,10 @@
 Данные функции балансируют друг друга таким образом: в начале размер шага разный для всех прямоугольников, но при стремлении i в бесконечность, он стремится к PI/30
 
 
-**Война и мир, 100 слов длиннее двух букв, размер шрифта от 20 до 100**
+**Война и мир, 50 слов длиннее трех букв, размер шрифта от 10 до 80**
 ![1](https://raw.githubusercontent.com/Yewert/tdd/development/TagsCloudVisualization/TagsCloudVisualization/coolWords1.png)
 
-**Война и мир, 100 слов длиннее трех букв, размер шрифта от 30 до 120**
+**Война и мир, 100 слов длиннее трех букв, размер шрифта от 20 до 120**
 ![2](https://raw.githubusercontent.com/Yewert/tdd/development/TagsCloudVisualization/TagsCloudVisualization/coolWords2.png)
 
 **Война и мир, 500 слов длиннее трех букв, размер шрифта 0т 20 до 120**
