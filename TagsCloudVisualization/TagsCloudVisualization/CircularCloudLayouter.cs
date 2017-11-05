@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using FluentAssertions;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private const double deltaAngle = Math.PI / 16;
+        private const double DeltaAngle = Math.PI / 15;
         
         private readonly Point center;
 
@@ -55,21 +56,36 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+                throw new ArgumentException();
             var rectangle = PlaceNewRectangle(rectangleSize);
-            LeftBound = rectangle.X;
-            RightBound = rectangle.X + rectangleSize.Width;
-            UpperBound = rectangle.Y;
-            LowerBound = rectangle.Y + rectangleSize.Height;
-            rectangles.Add(rectangle);
-            return rectangle;
+            if (rectangle is null)
+            {
+                // Не знаю, как протестировать/искоренить случай не нахождения места прямоугольника,
+                // когда пробежал углы [0; int.Max * PI / 30] в полярной системе координат
+                throw new NotSupportedException();
+            }
+            LeftBound = rectangle.Value.X;
+            RightBound = rectangle.Value.X + rectangleSize.Width;
+            UpperBound = rectangle.Value.Y;
+            LowerBound = rectangle.Value.Y + rectangleSize.Height;
+            rectangles.Add(rectangle.Value);
+            return rectangle.Value;
         }
 
-        private Rectangle PlaceNewRectangle(Size rectangleSize)
+        private Rectangle? PlaceNewRectangle(Size rectangleSize)
         {
+            var square = unchecked(rectangleSize.Height * rectangleSize.Width);
+            square = square < 0 ? int.MaxValue : square;
+            var stretchCoefficient = (1.0 / square);
             var i = 0;
             while (true)
             {
-                var shiftFromCenter = TransformCoordinatesFromPolarToCartesian(i * deltaAngle, i * deltaAngle);
+                if (i == int.MaxValue)
+                    return null;
+                var angle = i * DeltaAngle
+                            *(0.75 / (i * stretchCoefficient + 1) + 0.5);
+                var shiftFromCenter = TransformCoordinatesFromPolarToCartesian(angle, angle);
                 var upperLeftCorner = new Point(center.X + shiftFromCenter.X - rectangleSize.Width / 2,
                     center.Y + shiftFromCenter.Y - rectangleSize.Height / 2);
                 var rectangle = new Rectangle(upperLeftCorner, rectangleSize);
@@ -79,12 +95,12 @@ namespace TagsCloudVisualization
             }
         }
 
-        public bool IntersectsWithAnyOtherRectangle(Rectangle rect)
+        private bool IntersectsWithAnyOtherRectangle(Rectangle rect)
         {
             return rectangles.Any(r => r.IntersectsWith(rect));
         }
 
-        private (int X, int Y) TransformCoordinatesFromPolarToCartesian(double angle, double length)
+        private static (int X, int Y) TransformCoordinatesFromPolarToCartesian(double angle, double length)
         {
             var x = (int) (length * Math.Cos(angle));
             var y = (int) (length * Math.Sin(angle));

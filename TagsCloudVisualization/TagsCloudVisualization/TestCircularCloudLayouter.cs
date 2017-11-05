@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -38,15 +39,19 @@ namespace TagsCloudVisualization
             actualDimensions.ShouldBeEquivalentTo((-5, 5, -5, 5, 10, 10));
         }
 
-        [Test]
-        public void HasCorrectCount_WhenMultipleRectanglesAdded()
+        [TestCase(2)]
+        [TestCase(100)]
+        [TestCase(1000)]
+        public void HasCorrectCount_WhenMultipleRectanglesAdded(int count)
         {
             var center = new Point(0, 0);
             var size = new Size(10, 10);
             var layouter = new CircularCloudLayouter(center);
-            layouter.PutNextRectangle(size);
-            layouter.PutNextRectangle(size);
-            Assert.AreEqual(2, layouter.Count);
+            for (int i = 0; i < count; i++)
+            {
+                layouter.PutNextRectangle(size);
+            }
+            Assert.AreEqual(count, layouter.Count);
         }
 
         [Test]
@@ -60,31 +65,30 @@ namespace TagsCloudVisualization
             Assert.False(rect1.IntersectsWith(rect2));
         }
 
-        
-        //TODO: ЭТО ГОВНОКОД ДЛЯ ВИЗУАЛЬНОЙ ОЦЕНКИ, В ФИНАЛЬНОЙ ВЕРСИИ ВЫПИЛИТЬ
-        [Test]
-        public void l()
+        [Test, Timeout(2000)]
+        public void WorksFast_When500RectanglesArePutIn()
         {
             var center = new Point(0, 0);
-            var size = new Size(1, 1);
+            var size = new Size(10, 10);
             var layouter = new CircularCloudLayouter(center);
-            var rects = new List<Rectangle>();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 500; i++)
             {
-                var s = new Size((int)(size.Width + i * 0.5), (int)(size.Height + i * 0.25));
-                rects.Add(layouter.PutNextRectangle(s));
+                layouter.PutNextRectangle(size);
             }
-            for (int i = 0; i < 100; i++)
-            {
-                rects[i] = new Rectangle(rects[i].X + center.X- layouter.LeftBound + 10,
-                    rects[i].Y + center.Y - layouter.UpperBound + 10, rects[i].Width, rects[i].Height);
-            }
-            var image = new Bitmap(layouter.Width + 20, layouter.Height + 20);
-            var graphics = Graphics.FromImage(image);
-            graphics.DrawRectangles(Pens.Black, rects.ToArray());
-            graphics.DrawEllipse(Pens.Blue, center.X + center.X - layouter.LeftBound + 10, center.Y + center.Y - layouter.UpperBound + 10, 1, 1);
-            image.Save("C:/Users/Денис/Documents/C#/tdd/TagsCloudVisualization/cool3.png", ImageFormat.Png);
-            Assert.True(true);
+        }
+
+        [TestCase(-1, 1)]
+        [TestCase(0, 1)]
+        [TestCase(1, -1)]
+        [TestCase(1, 0)]
+        [TestCase(0, 0)]
+        [TestCase(-1, -1)]
+        public void ThrowsArgumentException_WhenSizeHasAtLeastOneNonPositivDimension(int width, int height)
+        {
+            var center = new Point(0, 0);
+            var size = new Size(width, height);
+            var layouter = new CircularCloudLayouter(center);
+            Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(size));
         }
     }
 }
