@@ -65,7 +65,7 @@ namespace TagsCloudVisualization
             image.Save(savePath);
         }
 
-        private static readonly Regex WordPattern = new Regex(@"[a-zа-я][a-zа-я]{3,}",
+        private static readonly Regex WordPattern = new Regex(@"[a-zа-я][a-zа-я-]{3,}",
             RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
         
         private static Dictionary<string, int> MakeStatisitcs(string fileName)
