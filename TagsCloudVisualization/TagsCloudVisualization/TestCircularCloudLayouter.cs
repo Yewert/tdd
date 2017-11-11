@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -26,14 +28,14 @@ namespace TagsCloudVisualization
         public void HasCorrectBounds_AfterPuttingFirstRectangle()
         {
             var center = new Point(0, 0);
-            var size = new Size(10, 10);
+            var size = new Size(10, 15);
             var layouter = new CircularCloudLayouter(center);
             layouter.PutNextRectangle(size);
             (int left, int right, int top, int bottom, int width, int height) actualDimensions =
                 (layouter.LeftBound, layouter.RightBound,
                 layouter.UpperBound, layouter.LowerBound,
                 layouter.Width, layouter.Height);
-            actualDimensions.ShouldBeEquivalentTo((-5, 5, -5, 5, 10, 10));
+            actualDimensions.ShouldBeEquivalentTo((-5, 5, -7, 8, 10, 15));
         }
 
         [TestCase(2)]
@@ -52,14 +54,22 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void RectanglesDoNotIntersect_WhenPutTwoRectangles()
+        public void RectanglesDoNotIntersect_WhenPutMultipleRectangles()
         {
             var center = new Point(0, 0);
             var size = new Size(10, 10);
             var layouter = new CircularCloudLayouter(center);
-            var rect1 = layouter.PutNextRectangle(size);
-            var rect2 = layouter.PutNextRectangle(size);
-            Assert.False(rect1.IntersectsWith(rect2));
+            var rectangles = new List<Rectangle>();
+            for (var i = 0; i < 100; i++)
+            {
+                rectangles.Add(layouter.PutNextRectangle(size));
+            }
+            Assert.False(rectangles
+                .AsParallel()
+                .Select((rectangle, index) => rectangles
+                    .Skip(index + 1)
+                    .Any(rect => rect.IntersectsWith(rectangle)))
+                .Any(intersects => intersects));
         }
 
         [Test, Timeout(2000)]

@@ -4,11 +4,19 @@
 3) Создаем прямоугольник, проверяем его на пересечение с другими
 4) Если он пересекается, то делаем сдвиг на определенный угол и переходим к пункту 1.
 
-Угол определяется следующим образом: `angle += Pi/15 * ((3/4) / (i * stretchCoefficient + 1) + 0.5))`
+Угол определяется следующим образом: 
 
-`stretchCoefficient` пропорцианален площади прямоугольника.
+`angle += BaseDeltaAngle * (StretchYCoefficient / (iteration * stretchXCoefficient + 1) + LimitOfMultipliers)`
 
-`i` лежит в `[0; int.Max - 1]`
+`BaseDeltaAngle` = PI/15
+
+`StretchYCoefficient` = 3/4
+
+`LimitOfMultipliers` = 1/2
+
+`stretchXCoefficient` обратно пропорцианален площади прямоугольника.
+
+`iteration` лежит в `[0; int.Max - 1]`
 
 Идея заключается в том, что чем ближе к центру, тем плотнее располагаются прямоугольники.
 Из этого вытекают 2 вещи:

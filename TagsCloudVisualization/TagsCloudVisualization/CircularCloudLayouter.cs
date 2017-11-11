@@ -6,9 +6,7 @@ using System.Linq;
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
-    {
-        private const double DeltaAngle = Math.PI / 15;
-        
+    {   
         private readonly Point center;
 
         public int LeftBound
@@ -35,10 +33,10 @@ namespace TagsCloudVisualization
             private set => lowerBound = Math.Max(lowerBound, value);
         }
 
-        private int leftBound = 0;
-        private int rightBound = 0;
-        private int upperBound = 0;
-        private int lowerBound = 0;
+        private int leftBound;
+        private int rightBound;
+        private int upperBound;
+        private int lowerBound;
         
         private readonly List<Rectangle> rectangles;
 
@@ -50,48 +48,63 @@ namespace TagsCloudVisualization
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
-            this.rectangles = new List<Rectangle>();
+            rectangles = new List<Rectangle>();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException();
-            var rectangle = PlaceNewRectangle(rectangleSize);
-            if (rectangle is null)
+            var success = TryPutNextRectangle(rectangleSize, out var rectangle);
+            if (!success)
             {
-                // Не знаю, как протестировать/искоренить случай не нахождения места прямоугольника,
-                // когда пробежал углы [0; int.Max * PI / 30] в полярной системе координат
                 throw new NotSupportedException();
             }
-            LeftBound = rectangle.Value.X;
-            RightBound = rectangle.Value.X + rectangleSize.Width;
-            UpperBound = rectangle.Value.Y;
-            LowerBound = rectangle.Value.Y + rectangleSize.Height;
-            rectangles.Add(rectangle.Value);
-            return rectangle.Value;
+            UpdateBounds(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+            rectangles.Add(rectangle);
+            return rectangle;
         }
 
-        private Rectangle? PlaceNewRectangle(Size rectangleSize)
+        private void UpdateBounds(int x, int y, int width, int height)
         {
-            var square = unchecked(rectangleSize.Height * rectangleSize.Width);
-            square = square < 0 ? int.MaxValue : square;
+            LeftBound = x;
+            RightBound = x + width;
+            UpperBound = y;
+            LowerBound = y + height;
+        }
+
+        private bool TryPutNextRectangle(Size rectangleSize, out Rectangle rectangle)
+        {
+            var square = (long)rectangleSize.Height * rectangleSize.Width;
             var stretchCoefficient = (1.0 / square);
-            var i = 0;
             var angle = 0.0;
-            while (true)
+            for(var i = 0; i < int.MaxValue; i++)
             {
-                if (i == int.MaxValue)
-                    return null;
-                angle += DeltaAngle *(0.75 / (i * stretchCoefficient + 1) + 0.5);
                 var shiftFromCenter = TransformCoordinatesFromPolarToCartesian(angle, angle);
                 var upperLeftCorner = new Point(center.X + shiftFromCenter.X - rectangleSize.Width / 2,
                     center.Y + shiftFromCenter.Y - rectangleSize.Height / 2);
-                var rectangle = new Rectangle(upperLeftCorner, rectangleSize);
-                if (!IntersectsWithAnyOtherRectangle(rectangle))
-                    return rectangle;
-                i++;
+                var temporaryRectangle = new Rectangle(upperLeftCorner, rectangleSize);
+                if (!IntersectsWithAnyOtherRectangle(temporaryRectangle))
+                {
+                    rectangle = temporaryRectangle;
+                    return true;
+                }
+                angle += GetNextShift(i, stretchCoefficient);
             }
+            rectangle = Rectangle.Empty;
+            return false;
+        }
+
+
+        private const double LimitOfMultipliers = 0.5;
+        
+        private const double BaseDeltaAngle = Math.PI / 15;
+
+        private const double StretchYCoefficient = 0.75;
+        
+        private double GetNextShift(int iteration, double stretchXCoefficient)
+        {
+            return BaseDeltaAngle * (StretchYCoefficient / (iteration * stretchXCoefficient + 1) + LimitOfMultipliers);
         }
 
         private bool IntersectsWithAnyOtherRectangle(Rectangle rect)
