@@ -35,10 +35,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="FrequencyAnalyzer.cs" />
+    <Compile Include="CloudMaker.cs" />
+    <Compile Include="CoordinatesTransformer.cs" />
+    <Compile Include="LineReader.cs" />
+    <Compile Include="WordFrequencyAnalyzer.cs" />
     <Compile Include="TestCircularCloudLayouter.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Visualisation.cs" />
+    <Compile Include="WordCloudVisualisator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=4.19.4.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a">

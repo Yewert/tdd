@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Fclp;
 
 namespace TagsCloudVisualization
@@ -27,9 +28,23 @@ namespace TagsCloudVisualization
             parser.SetupHelp("h", "help", "?").Callback(x => Console.WriteLine(x)).UseForEmptyArgs();
             parser.Parse(args);
 
-            var visualisation = new Visualisation(maxFontSize, minFontSize, debug);
-            var statsMaker = new FrequencyAnalyzer(amountOfWords, minWordLength, lowerCase);
-            var image = visualisation.MakeWordClod(statsMaker.MakeStatisitcs(statsSource));
+            var lines = LineReader.ReadLinesFromFile(statsSource);
+            var statsMaker = new WordFrequencyAnalyzer(minWordLength, lowerCase);
+            var cloudMaker = new CloudMaker(minFontSize, maxFontSize);
+            var visualisator = new WordCloudVisualisator(debug);
+            
+            
+            var stats = statsMaker.MakeStatisitcs(lines);
+            var significantStats = stats
+                .OrderByDescending(kvp => kvp.Value)
+                .Take(amountOfWords)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            
+            var (wordCloud, center, width, height, leftBound, upperBound) =
+                cloudMaker.MakeWordCloudFromStats(significantStats);
+            
+            var image = visualisator.DrawWorldCloud(wordCloud, center, width, height, leftBound, upperBound);
+            
             image.Save(savePath);
         }
     }

@@ -80,7 +80,7 @@ namespace TagsCloudVisualization
             var angle = 0.0;
             for(var i = 0; i < int.MaxValue; i++)
             {
-                var shiftFromCenter = TransformCoordinatesFromPolarToCartesian(angle, angle);
+                var shiftFromCenter = CoordinatesTransformer.TransformCoordinatesFromPolarToCartesian(angle, angle);
                 var upperLeftCorner = new Point(center.X + shiftFromCenter.X - rectangleSize.Width / 2,
                     center.Y + shiftFromCenter.Y - rectangleSize.Height / 2);
                 var temporaryRectangle = new Rectangle(upperLeftCorner, rectangleSize);
@@ -112,11 +112,6 @@ namespace TagsCloudVisualization
             return rectangles.Any(r => r.IntersectsWith(rect));
         }
 
-        private static (int X, int Y) TransformCoordinatesFromPolarToCartesian(double angle, double length)
-        {
-            var x = (int) (length * Math.Cos(angle));
-            var y = (int) (length * Math.Sin(angle));
-            return (x, y);
-        }
+        
     }
 }
