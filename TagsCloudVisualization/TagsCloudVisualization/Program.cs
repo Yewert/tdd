@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using Fclp;
 
@@ -27,9 +30,15 @@ namespace TagsCloudVisualization
             parser.Setup<bool>('l', "lower").Callback(l => lowerCase = l);
             parser.SetupHelp("h", "help", "?").Callback(x => Console.WriteLine(x)).UseForEmptyArgs();
             parser.Parse(args);
+            if (savePath is null || statsSource is null)
+            {
+                Console.WriteLine("save and source are required");
+                return;
+            }
 
-            var lines = LineReader.ReadLinesFromFile(statsSource);
+            var lines = File.ReadLines(statsSource);
             var statsMaker = new WordFrequencyAnalyzer(minWordLength, lowerCase);
+            var layouter = new CircularCloudLayouter(new Point(0, 0));
             var cloudMaker = new CloudMaker(minFontSize, maxFontSize);
             var visualisator = new WordCloudVisualisator(debug);
             
@@ -40,10 +49,19 @@ namespace TagsCloudVisualization
                 .Take(amountOfWords)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             
-            var (wordCloud, center, width, height, leftBound, upperBound) =
-                cloudMaker.MakeWordCloudFromStats(significantStats);
+            var wordCloud =
+                cloudMaker.MakeWordCloudFromStats(significantStats, layouter)
+                    .AsParallel()
+                    .Select(kvp =>
+                        new KeyValuePair<string, (Rectangle rectangle, Font font)>(kvp.Key, 
+                            (new Rectangle(
+                                CoordinatesTransformer.TransformRelativeToAbsoluteBounded(
+                                    kvp.Value.rectangle.Location, layouter.Center, layouter.LeftBound, layouter.UpperBound),
+                                kvp.Value.rectangle.Size),
+                            kvp.Value.font)))
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             
-            var image = visualisator.DrawWorldCloud(wordCloud, center, width, height, leftBound, upperBound);
+            var image = visualisator.DrawWorldCloud(wordCloud);
             
             image.Save(savePath);
         }

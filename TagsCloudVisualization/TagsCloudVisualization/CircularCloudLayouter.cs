@@ -44,7 +44,9 @@ namespace TagsCloudVisualization
 
         public int Width => RightBound - LeftBound;
         public int Height => LowerBound - UpperBound;
-        
+
+        public Point Center => center;
+
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
@@ -81,8 +83,8 @@ namespace TagsCloudVisualization
             for(var i = 0; i < int.MaxValue; i++)
             {
                 var shiftFromCenter = CoordinatesTransformer.TransformCoordinatesFromPolarToCartesian(angle, angle);
-                var upperLeftCorner = new Point(center.X + shiftFromCenter.X - rectangleSize.Width / 2,
-                    center.Y + shiftFromCenter.Y - rectangleSize.Height / 2);
+                var upperLeftCorner = new Point(Center.X + shiftFromCenter.X - rectangleSize.Width / 2,
+                    Center.Y + shiftFromCenter.Y - rectangleSize.Height / 2);
                 var temporaryRectangle = new Rectangle(upperLeftCorner, rectangleSize);
                 if (!IntersectsWithAnyOtherRectangle(temporaryRectangle))
                 {

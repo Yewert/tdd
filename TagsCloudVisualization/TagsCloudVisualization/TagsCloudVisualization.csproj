@@ -37,7 +37,6 @@
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CloudMaker.cs" />
     <Compile Include="CoordinatesTransformer.cs" />
-    <Compile Include="LineReader.cs" />
     <Compile Include="WordFrequencyAnalyzer.cs" />
     <Compile Include="TestCircularCloudLayouter.cs" />
     <Compile Include="Program.cs" />
