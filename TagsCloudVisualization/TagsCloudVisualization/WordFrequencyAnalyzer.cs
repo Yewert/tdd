@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace TagsCloudVisualization
 {
-    public class WordFrequencyAnalyzer
+    public class WordFrequencyAnalyzer : IWordFrequencyAnalyzer
     {
         private readonly bool lowerCase;
         private readonly Regex wordPattern;
@@ -21,23 +22,14 @@ namespace TagsCloudVisualization
 
         public Dictionary<string, int> MakeStatisitcs(IEnumerable<string> lines)
         {
-            if (lines is null)
+            if (lines is null)    
                 throw new ArgumentNullException();
-            var stats = new Dictionary<string, int>();
-            foreach (var line in lines)
-            {
-                var words = wordPattern.Matches(line);
-                foreach (Match match in words)
-                {
-                    var word = lowerCase
-                        ? match.Value.ToLowerInvariant()
-                        : match.Value.ToUpperInvariant();
-                    if (!stats.ContainsKey(word))
-                        stats[word] = 0;
-                    stats[word]++;
-                }
-            }
-            return stats;
+
+            return lines.SelectMany(line => wordPattern.Matches(line).Cast<Match>()).Select(m => lowerCase
+                        ? m.Value.ToLowerInvariant()
+                        : m.Value.ToUpperInvariant())
+                    .GroupBy(w => w)
+                    .ToDictionary(g => g.Key, g => g.Count());
         }
     }
 }

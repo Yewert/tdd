@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class WordCloudVisualisator
+    public class WordCloudVisualisator : IWordCloudVisualisator
     {
         private readonly int margin;
         private readonly bool debug;

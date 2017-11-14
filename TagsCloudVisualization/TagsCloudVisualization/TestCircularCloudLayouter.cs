@@ -20,7 +20,7 @@ namespace TagsCloudVisualization
             var size = new Size(rectangleWidth, rectangleHeight);
             var rectangleCoords = new Point(rectangleX, rectangleY);
             var rectangle = new Rectangle(rectangleCoords, size);
-            var layouter = new CircularCloudLayouter(center);
+            var layouter = new CircularCloudLayouter(center, new BasisChanger());
             layouter.PutNextRectangle(size).ShouldBeEquivalentTo(rectangle);
         }
 
@@ -29,7 +29,7 @@ namespace TagsCloudVisualization
         {
             var center = new Point(0, 0);
             var size = new Size(10, 15);
-            var layouter = new CircularCloudLayouter(center);
+            var layouter = new CircularCloudLayouter(center, new BasisChanger());
             layouter.PutNextRectangle(size);
             (int left, int right, int top, int bottom, int width, int height) actualDimensions =
                 (layouter.LeftBound, layouter.RightBound,
@@ -45,7 +45,7 @@ namespace TagsCloudVisualization
         {
             var center = new Point(0, 0);
             var size = new Size(10, 10);
-            var layouter = new CircularCloudLayouter(center);
+            var layouter = new CircularCloudLayouter(center, new BasisChanger());
             for (int i = 0; i < count; i++)
             {
                 layouter.PutNextRectangle(size);
@@ -58,7 +58,7 @@ namespace TagsCloudVisualization
         {
             var center = new Point(0, 0);
             var size = new Size(10, 10);
-            var layouter = new CircularCloudLayouter(center);
+            var layouter = new CircularCloudLayouter(center, new BasisChanger());
             var rectangles = new List<Rectangle>();
             for (var i = 0; i < 100; i++)
             {
@@ -77,7 +77,7 @@ namespace TagsCloudVisualization
         {
             var center = new Point(0, 0);
             var size = new Size(10, 10);
-            var layouter = new CircularCloudLayouter(center);
+            var layouter = new CircularCloudLayouter(center, new BasisChanger());
             for (int i = 0; i < 500; i++)
             {
                 layouter.PutNextRectangle(size);
@@ -94,7 +94,7 @@ namespace TagsCloudVisualization
         {
             var center = new Point(0, 0);
             var size = new Size(width, height);
-            var layouter = new CircularCloudLayouter(center);
+            var layouter = new CircularCloudLayouter(center, new BasisChanger());
             Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(size));
         }
     }
