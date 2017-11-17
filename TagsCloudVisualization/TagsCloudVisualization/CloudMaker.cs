@@ -5,13 +5,16 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class WordCloud
+    public class CloudMaker
     {
+        private readonly IWordFrequencyAnalyzer statsMaker;
+        private readonly int amountOfWords;
+        private readonly ICircularCloudLayouter layouter;
         private readonly IFontNormalizer normalizer;
+        private readonly IImageBounder bounder;
         private readonly IWordCloudVisualisator visualisator;
-        private readonly WordCloudElement[] wordCloud;
 
-        public WordCloud(IEnumerable<string> sourceData,
+        public CloudMaker(
             IWordFrequencyAnalyzer statsMaker,
             int amountOfWords,
             ICircularCloudLayouter layouter,
@@ -19,23 +22,16 @@ namespace TagsCloudVisualization
             IImageBounder bounder,
             IWordCloudVisualisator visualisator)
         {
+            this.statsMaker = statsMaker;
+            this.amountOfWords = amountOfWords;
+            this.layouter = layouter;
             this.normalizer = normalizer;
+            this.bounder = bounder;
             this.visualisator = visualisator;
-            var stats = MakeStats(sourceData, statsMaker, amountOfWords);
-            wordCloud = MakeWordCloudFromStats(stats, layouter)
-                .Select(element =>
-                    new WordCloudElement(element.Name, 
-                        new Rectangle(
-                            bounder.TransformRelativeToAbsoluteBounded(element.Rectangle.Location,
-                                layouter.Center,
-                                layouter.LeftBound, layouter.UpperBound),
-                            element.Rectangle.Size),
-                        element.Font)).ToArray();
+            
         }
 
-        private IEnumerable<KeyValuePair<string, int>> MakeStats(IEnumerable<string> sourceData,
-            IWordFrequencyAnalyzer statsMaker,
-            int amountOfWords)
+        private IEnumerable<KeyValuePair<string, int>> MakeStats(IEnumerable<string> sourceData)
         {
             var stats = statsMaker.MakeStatisitcs(sourceData);
             return stats
@@ -64,9 +60,22 @@ namespace TagsCloudVisualization
             // ReSharper disable once PossibleMultipleEnumeration
             return stats.Select(GetFontAndPutRectangle).ToArray();
         }
-        
-        
-        
-        public Bitmap GetImage => visualisator.DrawWorldCloud(wordCloud);
+
+
+
+        public Bitmap GetImage(IEnumerable<string> source)
+        {
+            var stats = MakeStats(source);
+            var wordCloud = MakeWordCloudFromStats(stats, layouter)
+                .Select(element =>
+                    new WordCloudElement(element.Name, 
+                        new Rectangle(
+                            bounder.TransformRelativeToAbsoluteBounded(element.Rectangle.Location,
+                                layouter.Center,
+                                layouter.LeftBound, layouter.UpperBound),
+                            element.Rectangle.Size),
+                        element.Font));
+            return visualisator.DrawWorldCloud(wordCloud);
+        }
     }
 }

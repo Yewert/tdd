@@ -36,7 +36,7 @@
   <ItemGroup>
     <Compile Include="BasisChanger.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="WordCloud.cs" />
+    <Compile Include="CloudMaker.cs" />
     <Compile Include="FontNormalizer.cs" />
     <Compile Include="IFontNormalizer.cs" />
     <Compile Include="IImageBounder.cs" />
