@@ -36,13 +36,16 @@
   <ItemGroup>
     <Compile Include="BasisChanger.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="CloudMaker.cs" />
+    <Compile Include="WordCloud.cs" />
+    <Compile Include="FontNormalizer.cs" />
+    <Compile Include="IFontNormalizer.cs" />
     <Compile Include="IImageBounder.cs" />
     <Compile Include="ImageBounder.cs" />
     <Compile Include="IBasisChanger.cs" />
     <Compile Include="ICircularCloudLayouter.cs" />
     <Compile Include="IWordCloudVisualisator.cs" />
     <Compile Include="IWordFrequencyAnalyzer.cs" />
+    <Compile Include="WordCloudElement.cs" />
     <Compile Include="WordFrequencyAnalyzer.cs" />
     <Compile Include="TestCircularCloudLayouter.cs" />
     <Compile Include="Program.cs" />

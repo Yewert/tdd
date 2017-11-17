@@ -5,6 +5,6 @@ namespace TagsCloudVisualization
 {
     public interface IWordCloudVisualisator
     {
-        Bitmap DrawWorldCloud(IEnumerable<KeyValuePair<string, (Rectangle rectangle, Font font)>> wordCloud);
+        Bitmap DrawWorldCloud(IEnumerable<WordCloudElement> wordCloud);
     }
 }

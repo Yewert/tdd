@@ -35,16 +35,16 @@ namespace TagsCloudVisualization
                 return;
             }
             
-            var cloudMaker = new CloudMaker(minFontSize, maxFontSize);
-            var image = cloudMaker.MakeCloud(
+            var cloud = new WordCloud(
                 File.ReadLines(statsSource),
                 new WordFrequencyAnalyzer(minWordLength, lowerCase),
                 amountOfWords,
                 new CircularCloudLayouter(new Point(0, 0), new BasisChanger()),
+                new FontNormalizer(minFontSize, maxFontSize),
                 new ImageBounder(),
                 new WordCloudVisualisator(debug));
             
-            image.Save(savePath);
+            cloud.GetImage.Save(savePath);
         }
     }
 }
