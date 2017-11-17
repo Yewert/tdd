@@ -31,21 +31,19 @@ namespace TagsCloudVisualization
             
         }
 
-        private IEnumerable<KeyValuePair<string, int>> MakeStats(IEnumerable<string> sourceData)
+        private IReadOnlyCollection<KeyValuePair<string, int>> MakeStats(IEnumerable<string> sourceData)
         {
             var stats = statsMaker.MakeStatisitcs(sourceData);
             return stats
                 .OrderByDescending(kvp => kvp.Value)
-                .Take(amountOfWords);
+                .Take(amountOfWords)
+                .ToArray();
         }
 
-        private IEnumerable<WordCloudElement> MakeWordCloudFromStats(
-                IEnumerable<KeyValuePair<string, int>> stats, ICircularCloudLayouter layouter)
+        private IReadOnlyCollection<WordCloudElement> MakeWordCloudFromStats(
+                IReadOnlyCollection<KeyValuePair<string, int>> stats, ICircularCloudLayouter layouter)
         {
-            
-            // ReSharper disable once PossibleMultipleEnumeration
             var maxWeight = stats.Max(kvp => kvp.Value);
-            // ReSharper disable once PossibleMultipleEnumeration
             var minWeight = stats.Min(kvp => kvp.Value);
 
             WordCloudElement GetFontAndPutRectangle(KeyValuePair<string, int> kvp)
@@ -57,7 +55,6 @@ namespace TagsCloudVisualization
                 return new WordCloudElement(kvp.Key, rectangle, font);
             }
 
-            // ReSharper disable once PossibleMultipleEnumeration
             return stats.Select(GetFontAndPutRectangle).ToArray();
         }
 
